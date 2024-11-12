@@ -8,10 +8,10 @@ from pydantic import BaseModel
 # Initialize FastAPI app
 app = FastAPI()
 
-# Enable CORS for all routes
+# Allow specific origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://martvio.github.io"],  # Replace with your front-end URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
