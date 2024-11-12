@@ -9,7 +9,7 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
 # Initialize Firebase Admin SDK
-cred = credentials.Certificate("fastapi.json")  # Replace with your credentials file path
+cred = credentials.Certificate("/etc/secrets/key.json")  # Replace with your credentials file path
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://database-b81ee-default-rtdb.firebaseio.com/'  # Replace with your Firebase database URL
 })
