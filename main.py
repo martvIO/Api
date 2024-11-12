@@ -1,10 +1,12 @@
 import os
 from flask import Flask, request, jsonify
+from flask_cors import CORS  # Import CORS
 import firebase_admin
 from firebase_admin import credentials, db
 
 # Initialize Flask app
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 # Initialize Firebase Admin SDK
 cred = credentials.Certificate("database-b81ee-firebase-adminsdk-6w3fp-05d9a01c2d.json")  # Replace with your credentials file path
@@ -15,28 +17,26 @@ firebase_admin.initialize_app(cred, {
 # Route to add username and password to Firebase Realtime Database
 @app.route('/register', methods=['POST'])
 def register_user():
+    data = request.get_json()  # Retrieve JSON data from the request
+    username = data.get('username')
+    password = data.get('password')
+
+    if not username or not password:
+        return jsonify({"error": "Username and password are required"}), 400
+
     try:
-        # Get JSON data from the request
-        data = request.get_json()
-
-        # Validate that 'username' and 'password' are in the request
-        if 'username' not in data or 'password' not in data:
-            return jsonify({"error": "Username and password are required"}), 400
-
-        username = data['username']
-        password = data['password']
-
         # Reference to the Realtime Database
         ref = db.reference('users').child(username)
 
-        # Push new user data to Firebase under a unique key
-        ref.push({
+        # Store password (as example, ideally should be hashed for security)
+        ref.set({
             'password': password
         })
 
         return jsonify({"message": "User registered successfully"}), 201
-    except:
-        pass
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0',port=port,debug=True)
+    app.run(host='0.0.0.0', port=port, debug=True)
