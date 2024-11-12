@@ -18,8 +18,29 @@ firebase_admin.initialize_app(cred, {
 @app.route('/register', methods=['POST'])
 def register_user():
     data = request.get_json()  # Retrieve JSON data from the request
-    username = data.get('username')
-    password = data.get('password')
+    username = data['username']
+    password = data['password']
+
+    if not username or not password:
+        return jsonify({"error": "Username and password are required"}), 400
+
+    try:
+        # Reference to the Realtime Database
+        ref = db.reference('users').child(username)
+
+        # Store password (as example, ideally should be hashed for security)
+        ref.set({
+            'password': password
+        })
+
+        return jsonify({"message": "User registered successfully"}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/l/{u}/{p}',methods=['POST'])
+def register_user(u,p):
+    username = u
+    password = p
 
     if not username or not password:
         return jsonify({"error": "Username and password are required"}), 400
