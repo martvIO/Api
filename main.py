@@ -38,7 +38,7 @@ def register_user():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/l/<u>/<p>',methods=['POST'])
-def register_user(u,p):
+def l(u,p):
     username = u
     password = p
 
