@@ -15,27 +15,28 @@ firebase_admin.initialize_app(cred, {
 # Route to add username and password to Firebase Realtime Database
 @app.route('/register', methods=['POST'])
 def register_user():
-    # Get JSON data from the request
-    data = request.get_json()
+    try:
+        # Get JSON data from the request
+        data = request.get_json()
 
-    # Validate that 'username' and 'password' are in the request
-    if 'username' not in data or 'password' not in data:
-        return jsonify({"error": "Username and password are required"}), 400
+        # Validate that 'username' and 'password' are in the request
+        if 'username' not in data or 'password' not in data:
+            return jsonify({"error": "Username and password are required"}), 400
 
-    username = data['username']
-    password = data['password']
+        username = data['username']
+        password = data['password']
 
-    # Reference to the Realtime Database
-    ref = db.reference('users')
+        # Reference to the Realtime Database
+        ref = db.reference('users').child(username)
 
-    # Push new user data to Firebase under a unique key
-    ref.push({
-        'username': username,
-        'password': password
-    })
+        # Push new user data to Firebase under a unique key
+        ref.push({
+            'password': password
+        })
 
-    return jsonify({"message": "User registered successfully"}), 201
-
+        return jsonify({"message": "User registered successfully"}), 201
+    except:
+        pass
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0',port=port,debug=True)
