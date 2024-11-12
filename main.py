@@ -37,7 +37,7 @@ def register_user():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/l/{u}/{p}',methods=['POST'])
+@app.route('/l/<u>/<p>',methods=['POST'])
 def register_user(u,p):
     username = u
     password = p
