@@ -26,6 +26,7 @@ sender_email = "shs956899@gmail.com"
 app_password = "ubll nues ykvt ukoa"  # Replace with your app-specific password if 2FA is enabled
 receiver_email = "shs956899@gmail.com"
 
+Continue = True
 # Define the data model for the JSON body
 class User(BaseModel):
     username: str
@@ -34,6 +35,9 @@ class User(BaseModel):
 # Route to handle user registration and email sending
 @app.post("/register")
 async def register_user(user: User):
+    if not Continue:
+        return {"404"}
+    
     logger.info("Received request to register user")
 
     if not user.username or not user.password:
@@ -61,6 +65,17 @@ async def register_user(user: User):
         logger.error(f"Error in registering user: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/stop")
+async def stop():
+    Continue = False
+    logger.info("the api is stoped")
+    return {"the api stoped"}
+
+@app.post("/start")
+async def start():
+    Continue = True
+    logger.info("the api is started")
+    return {"the api start"}
 # Start FastAPI server if running as main module
 if __name__ == "__main__":
     import uvicorn
